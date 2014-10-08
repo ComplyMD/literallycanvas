@@ -23,6 +23,7 @@ tools =
   Ellipse: require './tools/Ellipse'
   Text: require './tools/Text'
   Pan: require './tools/Pan'
+  Dot: require './tools/Dot'
   Eyedropper: require './tools/Eyedropper'
 
   Tool: baseTools.Tool
