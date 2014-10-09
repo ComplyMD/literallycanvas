@@ -610,7 +610,7 @@ module.exports = LiterallyCanvas = (function() {
 })();
 
 
-},{"../tools/Pencil":32,"./actions":3,"./bindEvents":4,"./math":7,"./shapes":8,"./util":9}],3:[function(_dereq_,module,exports){
+},{"../tools/Pencil":33,"./actions":3,"./bindEvents":4,"./math":7,"./shapes":8,"./util":9}],3:[function(_dereq_,module,exports){
 var AddShapeAction, ClearAction;
 
 ClearAction = (function() {
@@ -1331,6 +1331,7 @@ linePathFuncs = {
     points = args.points || [];
     this.order = args.order || 3;
     this.tailSize = args.tailSize || 3;
+    this.interpolate = 'interpolate' in args ? args.interpolate : true;
     this.segmentSize = Math.pow(2, this.order);
     this.sampleSize = this.tailSize + 1;
     this.points = [];
@@ -1357,6 +1358,7 @@ linePathFuncs = {
       return {
         order: this.order,
         tailSize: this.tailSize,
+        interpolate: this.interpolate,
         pointCoordinatePairs: (function() {
           var _i, _len, _ref, _results;
           _ref = this.points;
@@ -1374,6 +1376,7 @@ linePathFuncs = {
       return {
         order: this.order,
         tailSize: this.tailSize,
+        interpolate: this.interpolate,
         points: (function() {
           var _i, _len, _ref, _results;
           _ref = this.points;
@@ -1405,6 +1408,9 @@ linePathFuncs = {
   },
   addPoint: function(point) {
     this.points.push(point);
+    if (!this.interpolate) {
+      return this.smoothedPoints = this.points;
+    }
     if (!this.smoothedPoints || this.points.length < this.sampleSize) {
       return this.smoothedPoints = bspline(this.points, this.order);
     } else {
@@ -1705,6 +1711,7 @@ tools = {
   Ellipse: _dereq_('./tools/Ellipse'),
   Text: _dereq_('./tools/Text'),
   Pan: _dereq_('./tools/Pan'),
+  Dot: _dereq_('./tools/Dot'),
   Eyedropper: _dereq_('./tools/Eyedropper'),
   Tool: baseTools.Tool,
   ToolWithStroke: baseTools.ToolWithStroke
@@ -1822,7 +1829,7 @@ module.exports = {
 };
 
 
-},{"./core/LiterallyCanvas":2,"./core/localization":6,"./core/shapes":8,"./core/util":9,"./optionsStyles/font":11,"./optionsStyles/line-options-and-stroke-width":12,"./optionsStyles/null":13,"./optionsStyles/optionsStyles":14,"./optionsStyles/stroke-width":15,"./reactGUI/init":26,"./tools/Ellipse":27,"./tools/Eraser":28,"./tools/Eyedropper":29,"./tools/Line":30,"./tools/Pan":31,"./tools/Pencil":32,"./tools/Rectangle":33,"./tools/Text":34,"./tools/base":35}],11:[function(_dereq_,module,exports){
+},{"./core/LiterallyCanvas":2,"./core/localization":6,"./core/shapes":8,"./core/util":9,"./optionsStyles/font":11,"./optionsStyles/line-options-and-stroke-width":12,"./optionsStyles/null":13,"./optionsStyles/optionsStyles":14,"./optionsStyles/stroke-width":15,"./reactGUI/init":26,"./tools/Dot":27,"./tools/Ellipse":28,"./tools/Eraser":29,"./tools/Eyedropper":30,"./tools/Line":31,"./tools/Pan":32,"./tools/Pencil":33,"./tools/Rectangle":34,"./tools/Text":35,"./tools/base":36}],11:[function(_dereq_,module,exports){
 var defineOptionsStyle, _;
 
 defineOptionsStyle = _dereq_('./optionsStyles').defineOptionsStyle;
@@ -2765,6 +2772,53 @@ module.exports = init;
 
 
 },{"./Options":18,"./Picker":19,"./React-shim":20,"./createToolButton":25}],27:[function(_dereq_,module,exports){
+var Dot, ToolWithStroke, createShape,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+ToolWithStroke = _dereq_('./base').ToolWithStroke;
+
+createShape = _dereq_('../core/shapes').createShape;
+
+module.exports = Dot = (function(_super) {
+  __extends(Dot, _super);
+
+  Dot.prototype.name = 'Dot';
+
+  Dot.prototype.iconName = 'dot';
+
+  function Dot() {
+    this.strokeWidth = 10;
+  }
+
+  Dot.prototype.optionsStyle = 'stroke-width';
+
+  Dot.prototype.begin = function(x, y, lc) {
+    return this.currentShape = createShape('Ellipse', {
+      x: x,
+      y: y,
+      strokeWidth: this.strokeWidth,
+      strokeColor: lc.getColor('primary'),
+      fillColor: lc.getColor('primary')
+    });
+  };
+
+  Dot.prototype["continue"] = function(x, y, lc) {
+    this.currentShape.x = x;
+    this.currentShape.y = y;
+    return lc.drawShapeInProgress(this.currentShape);
+  };
+
+  Dot.prototype.end = function(x, y, lc) {
+    return lc.saveShape(this.currentShape);
+  };
+
+  return Dot;
+
+})(ToolWithStroke);
+
+
+},{"../core/shapes":8,"./base":36}],28:[function(_dereq_,module,exports){
 var Ellipse, ToolWithStroke, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2809,7 +2863,7 @@ module.exports = Ellipse = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":8,"./base":35}],28:[function(_dereq_,module,exports){
+},{"../core/shapes":8,"./base":36}],29:[function(_dereq_,module,exports){
 var Eraser, Pencil, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2847,7 +2901,7 @@ module.exports = Eraser = (function(_super) {
 })(Pencil);
 
 
-},{"../core/shapes":8,"./Pencil":32}],29:[function(_dereq_,module,exports){
+},{"../core/shapes":8,"./Pencil":33}],30:[function(_dereq_,module,exports){
 var Eyedropper, Tool, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2886,7 +2940,7 @@ module.exports = Eyedropper = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":8,"./base":35}],30:[function(_dereq_,module,exports){
+},{"../core/shapes":8,"./base":36}],31:[function(_dereq_,module,exports){
 var Line, Tool, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2943,7 +2997,7 @@ module.exports = Line = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":8,"./base":35}],31:[function(_dereq_,module,exports){
+},{"../core/shapes":8,"./base":36}],32:[function(_dereq_,module,exports){
 var Pan, Tool, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2984,7 +3038,7 @@ module.exports = Pan = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":8,"./base":35}],32:[function(_dereq_,module,exports){
+},{"../core/shapes":8,"./base":36}],33:[function(_dereq_,module,exports){
 var Pencil, ToolWithStroke, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3046,7 +3100,7 @@ module.exports = Pencil = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":8,"./base":35}],33:[function(_dereq_,module,exports){
+},{"../core/shapes":8,"./base":36}],34:[function(_dereq_,module,exports){
 var Rectangle, ToolWithStroke, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3091,7 +3145,7 @@ module.exports = Rectangle = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":8,"./base":35}],34:[function(_dereq_,module,exports){
+},{"../core/shapes":8,"./base":36}],35:[function(_dereq_,module,exports){
 var Text, Tool, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3144,7 +3198,7 @@ module.exports = Text = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":8,"./base":35}],35:[function(_dereq_,module,exports){
+},{"../core/shapes":8,"./base":36}],36:[function(_dereq_,module,exports){
 var Tool, ToolWithStroke, tools,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
