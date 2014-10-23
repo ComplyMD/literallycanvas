@@ -14,10 +14,10 @@ module.exports = class Dot extends ToolWithStroke
   begin: (x, y, lc) ->
     @currentShape = createShape('Ellipse', {
       x, y, @strokeWidth,
+      height: @strokeWidth,
+      width: @strokeWidth,
       strokeColor: lc.getColor('primary'),
-      fillColor: lc.getColor('primary'),
-      height: @strokeWidth, width: @strokeWidth
-    })
+      fillColor: lc.getColor('primary')})
     lc.drawShapeInProgress(@currentShape)
 
   continue: (x, y, lc) ->

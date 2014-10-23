@@ -238,6 +238,7 @@ linePathFuncs =
   constructor: (args={}) ->
     points = args.points or []
     @order = args.order or 3
+    @fillColor = args.fillColor or "rgba(255, 255, 255, 0.0)"
     @tailSize = args.tailSize or 3
     @interpolate = if 'interpolate' of args then args.interpolate else true
 
@@ -262,13 +263,13 @@ linePathFuncs =
   toJSON: ->
     if _doAllPointsShareStyle(@points)
       {
-        @order, @tailSize, @interpolate,
+        @order, @tailSize, @interpolate, @fillColor,
         pointCoordinatePairs: ([point.x, point.y] for point in @points),
         pointSize: @points[0].size,
         pointColor: @points[0].color
       }
     else
-      {@order, @tailSize, @interpolate, points: (shapeToJSON(p) for p in @points)}
+      {@order, @tailSize, @fillColor, @interpolate, points: (shapeToJSON(p) for p in @points)}
 
   fromJSON: (data) -> _createLinePathFromData('LinePath', data)
 
@@ -311,12 +312,15 @@ linePathFuncs =
 
     ctx.strokeStyle = points[0].color
     ctx.lineWidth = points[0].size
+    ctx.fillStyle = @fillColor
 
     ctx.beginPath()
     ctx.moveTo(points[0].x, points[0].y)
 
     for point in points.slice(1)
       ctx.lineTo(point.x, point.y)
+
+    ctx.fill()
 
     ctx.stroke()
 

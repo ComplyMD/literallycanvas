@@ -1,0 +1,13 @@
+{
+  "name": "literallycanvas",
+  "homepage": "https://github.com/bholzer/literallycanvas",
+  "_release": "1ef8dbd5dd",
+  "_resolution": {
+    "type": "branch",
+    "branch": "dot-tool",
+    "commit": "1ef8dbd5dda81b90351fe69ce2278937c0e515c6"
+  },
+  "_source": "git://github.com/bholzer/literallycanvas.git",
+  "_target": "dot-tool",
+  "_originalSource": "git://github.com/bholzer/literallycanvas.git"
+}
