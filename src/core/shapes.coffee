@@ -216,6 +216,8 @@ _doAllPointsShareStyle = (points) ->
   size = points[0].size
   color = points[0].color
   for point in points
+    unless point.size == size and point.color == color
+      console.log size, color, point.size, point.color
     return false unless point.size == size and point.color == color
   return true
 
@@ -227,20 +229,24 @@ _createLinePathFromData = (shapeName, data) ->
   else if data.pointCoordinatePairs
     points = (JSONToShape({
       className: 'Point',
-      data: {x: x, y: y, size: data.pointSize, color: data.pointColor}
+      data: {
+        x: x, y: y, size: data.pointSize, color: data.pointColor
+        smooth: data.smooth, fillColor: data.fillColor
+      }
     }) for [x, y] in data.pointCoordinatePairs)
   return null unless points[0]
-  createShape(
-    shapeName, {points, order: data.order, tailSize: data.tailSize})
+  createShape(shapeName, {
+    points, order: data.order, tailSize: data.tailSize, smooth: data.smooth, fillColor: data.fillColor
+  })
 
 
 linePathFuncs =
   constructor: (args={}) ->
     points = args.points or []
     @order = args.order or 3
-    @fillColor = args.fillColor or "rgba(255, 255, 255, 0.0)"
     @tailSize = args.tailSize or 3
-    @interpolate = if 'interpolate' of args then args.interpolate else true
+    @fillColor = args.fillColor or 'transparent'
+    @smooth = if 'smooth' of args then args.smooth else true
 
     # The number of smoothed points generated for each point added
     @segmentSize = Math.pow(2, @order)
@@ -263,13 +269,13 @@ linePathFuncs =
   toJSON: ->
     if _doAllPointsShareStyle(@points)
       {
-        @order, @tailSize, @interpolate, @fillColor,
+        @order, @tailSize, @smooth, @fillColor,
         pointCoordinatePairs: ([point.x, point.y] for point in @points),
         pointSize: @points[0].size,
         pointColor: @points[0].color
       }
     else
-      {@order, @tailSize, @fillColor, @interpolate, points: (shapeToJSON(p) for p in @points)}
+      {@order, @tailSize, @smooth, @fillColor, points: (shapeToJSON(p) for p in @points)}
 
   fromJSON: (data) -> _createLinePathFromData('LinePath', data)
 
@@ -288,7 +294,7 @@ linePathFuncs =
   addPoint: (point) ->
     @points.push(point)
 
-    return @smoothedPoints = @points if !@interpolate
+    return @smoothedPoints = @points if !@smooth
 
     if not @smoothedPoints or @points.length < @sampleSize
       @smoothedPoints = bspline(@points, @order)
@@ -311,8 +317,8 @@ linePathFuncs =
     ctx.lineCap = 'round'
 
     ctx.strokeStyle = points[0].color
-    ctx.lineWidth = points[0].size
     ctx.fillStyle = @fillColor
+    ctx.lineWidth = points[0].size
 
     ctx.beginPath()
     ctx.moveTo(points[0].x, points[0].y)
@@ -321,7 +327,6 @@ linePathFuncs =
       ctx.lineTo(point.x, point.y)
 
     ctx.fill()
-
     ctx.stroke()
 
 

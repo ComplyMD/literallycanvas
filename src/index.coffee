@@ -24,9 +24,8 @@ tools =
   Text: require './tools/Text'
   Pan: require './tools/Pan'
   Dot: require './tools/Dot'
-  PathFill: require './tools/PathFill'
+  AreaSelect: require './tools/AreaSelect'
   Eyedropper: require './tools/Eyedropper'
-
   Tool: baseTools.Tool
   ToolWithStroke: baseTools.ToolWithStroke
 
