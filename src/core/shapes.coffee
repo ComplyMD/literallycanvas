@@ -5,8 +5,9 @@ shapes = {}
 
 
 defineShape = (name, props) ->
-  Shape = (args...) ->
-    props.constructor.call(this, args...)
+  Shape = (argsObj) ->
+    props.constructor.call(this, argsObj)
+    @customData = argsObj.customData or {}
     this
   Shape.prototype.className = name
   Shape.fromJSON = props.fromJSON
@@ -94,7 +95,7 @@ defineShape 'Image',
     else
       @image.onload = retryCallback
   getBoundingRect: -> {@x, @y, width: @image.width, height: @image.height}
-  toJSON: -> {@x, @y, imageSrc: @image.src}
+  toJSON: -> {@x, @y, imageSrc: @image.src, @customData}
   fromJSON: (data) ->
     img = new Image()
     img.src = data.imageSrc
@@ -124,7 +125,7 @@ defineShape 'Rectangle',
     width: @width + @strokeWidth,
     height: @height + @strokeWidth,
   }
-  toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
+  toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor, @customData}
   fromJSON: (data) -> createShape('Rectangle', data)
 
 
@@ -165,7 +166,7 @@ defineShape 'Ellipse',
     width: @width + @strokeWidth,
     height: @height + @strokeWidth,
   }
-  toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
+  toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor, @customData}
   fromJSON: (data) -> createShape('Ellipse', data)
 
 
@@ -206,7 +207,7 @@ defineShape 'Line',
     height: Math.abs(@y2 - @y1) + @strokeWidth / 2,
   }
   toJSON: ->
-    {@x1, @y1, @x2, @y2, @strokeWidth, @color, @capStyle, @dash, @endCapShapes}
+    {@x1, @y1, @x2, @y2, @strokeWidth, @color, @capStyle, @dash, @endCapShapes, @customData}
   fromJSON: (data) -> createShape('Line', data)
 
 
@@ -269,13 +270,13 @@ linePathFuncs =
   toJSON: ->
     if _doAllPointsShareStyle(@points)
       {
-        @order, @tailSize, @smooth, @fillColor,
+        @order, @tailSize, @smooth, @fillColor, @customData,
         pointCoordinatePairs: ([point.x, point.y] for point in @points),
         pointSize: @points[0].size,
         pointColor: @points[0].color
       }
     else
-      {@order, @tailSize, @smooth, @fillColor, points: (shapeToJSON(p) for p in @points)}
+      {@order, @tailSize, @smooth, @fillColor, @customData, points: (shapeToJSON(p) for p in @points)}
 
   fromJSON: (data) -> _createLinePathFromData('LinePath', data)
 
@@ -369,7 +370,7 @@ defineShape 'Point',
     @color = args.color or ''
   lastPoint: -> this
   draw: (ctx) -> throw "not implemented"
-  toJSON: -> {@x, @y, @size, @color}
+  toJSON: -> {@x, @y, @size, @color, @customData}
   fromJSON: (data) -> createShape('Point', data)
 
 
@@ -387,7 +388,7 @@ defineShape 'Text',
     @boundingBoxWidth = Math.ceil ctx.measureText(@text).width
   getBoundingRect: ->
     {@x, @y, width: @boundingBoxWidth, height: 18} # we don't know height :-(
-  toJSON: -> {@x, @y, @text, @color, @font}
+  toJSON: -> {@x, @y, @text, @color, @font, @customData}
   fromJSON: (data) -> createShape('Text', data)
 
 

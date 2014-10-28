@@ -24,13 +24,20 @@ module.exports = class AreaSelect extends ToolWithStroke
     for backgroundShape in lc.backgroundShapes
       if @isPointInPath(x, y, backgroundShape.points)
         shape = createShape('LinePath', {points: backgroundShape.points, tailSize: 0, order: 1, smooth: false, fillColor: lc.getColor('secondary')})
+        shape.customData.sectionName = backgroundShape.customData.sectionName;
+        shape.customData.fillColor = lc.getColor('secondary');
+        shape.customData.isAreaSelection = true;
         lc.backgroundShapes.push(shape)
         lc.repaintLayer('background')
+        lc.trigger('shapeSave', {shape})
+        lc.trigger('drawingChange')
 
-        cloneShape = createShape('LinePath', {points: backgroundShape.points, tailSize: 0, order: 1, smooth: false})
-        cloneShape.customAttributes.section_name = backgroundShape.section_name
-        cloneShape.customAttributes.fill_color = lc.getColor('secondary')
-        lc.saveShape(cloneShape)
+        # console.log(backgroundShape)
+
+        # cloneShape = createShape('LinePath', {points: backgroundShape.points, tailSize: 0, order: 1, smooth: false})
+        # cloneShape.customData.fillColor = lc.getColor('secondary');
+        # cloneShape.customData.areaSelection = true;
+        # lc.saveShape(cloneShape)
 
   continue: (x, y, lc) ->
 
