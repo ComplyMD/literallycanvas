@@ -34,10 +34,9 @@ module.exports = class AreaSelect extends ToolWithStroke
           tailSize: 0,
           order: 1,
           smooth: false,
-          fillColor: lc.getColor('secondary'),
+          fillColor: "#428BCA",
           customData: {
             sectionName: backgroundShape.customData.sectionName,
-            fillColor: lc.getColor('secondary'),
             isAreaSelection: true
           }
         })

@@ -7,6 +7,8 @@ shapes = {}
 defineShape = (name, props) ->
   Shape = (argsObj) ->
     props.constructor.call(this, argsObj)
+    if not argsObj
+      argsObj = {}
     @customData = argsObj.customData or {}
     this
   Shape.prototype.className = name
