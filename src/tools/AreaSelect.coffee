@@ -6,7 +6,7 @@
 module.exports = class AreaSelect extends ToolWithStroke
 
   name: 'AreaSelect'
-  iconName: 'areaselect'
+  iconName: 'bucket'
 
   constructor: -> @strokeWidth = 10
   optionsStyle: 'stroke-width'
