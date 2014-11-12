@@ -14,7 +14,7 @@ Options = React.createClass
 
   render: ->
     # style can be null; cast it as a string
-    style = "" + @state.style
+    style = "" + null
     optionsStyles[style]({
       lc: @props.lc, tool: @state.tool, imageURLPrefix: @props.imageURLPrefix})
 
