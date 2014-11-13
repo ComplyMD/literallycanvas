@@ -9,7 +9,7 @@ ClearButton = React.createClass
   mixins: [createSetStateOnEventMixin('drawingChange')]
 
   render: ->
-    {div} = React.DOM
+    {li} = React.DOM
     {lc} = @props
 
     className = React.addons.classSet
@@ -19,7 +19,7 @@ ClearButton = React.createClass
       'disabled': not @state.isEnabled
     onClick = if lc.canUndo() then (=> lc.clear()) else ->
 
-    (div {className, onClick}, _('Clear'))
+    (li {className, onClick}, _('Clear'))
 
 
 module.exports = ClearButton
