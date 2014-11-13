@@ -77,18 +77,14 @@ init = (el, opts = {}) ->
   drawingViewElement = document.createElement('div')
   drawingViewElement.className = 'lc-drawing'
 
-  optionsElement = document.createElement('div')
-  optionsElement.className = 'lc-options'
-
   el.appendChild(pickerElement)
   el.appendChild(drawingViewElement)
-  el.appendChild(optionsElement)
 
   ### and get to work ###
 
   lc = new LiterallyCanvas(drawingViewElement, opts)
 
-  initReact(pickerElement, optionsElement, lc, opts.tools, opts.imageURLPrefix)
+  initReact(pickerElement, lc, opts.tools, opts.imageURLPrefix)
 
   if 'onInit' of opts
     opts.onInit(lc)

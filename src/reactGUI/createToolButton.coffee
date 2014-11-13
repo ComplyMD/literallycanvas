@@ -13,7 +13,7 @@ createToolButton = ({displayName, getTool, imageName}) ->
         # and explain here. --steve)
         @props.lc.setTool(tool)
     render: ->
-      {div, img} = React.DOM
+      {li, img} = React.DOM
       {imageURLPrefix, isSelected, onSelect} = @props
 
       className = React.addons.classSet
@@ -21,7 +21,7 @@ createToolButton = ({displayName, getTool, imageName}) ->
         'toolbar-button': true
         'thin-button': true
         'selected': isSelected
-      (div {className, onClick: (-> onSelect(tool)), title: displayName},
+      (li {className, onClick: (-> onSelect(tool)), title: displayName},
         (img \
           {
             className: 'lc-tool-icon',

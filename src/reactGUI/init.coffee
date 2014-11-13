@@ -5,7 +5,7 @@ Options = require './Options'
 Picker = require './Picker'
 
 
-init = (pickerElement, optionsElement, lc, tools, imageURLPrefix) ->
+init = (pickerElement, lc, tools, imageURLPrefix) ->
   toolButtonComponents = tools.map (ToolClass) ->
     toolInstance = new ToolClass()
     createToolButton
@@ -15,7 +15,6 @@ init = (pickerElement, optionsElement, lc, tools, imageURLPrefix) ->
 
   React.renderComponent(Picker(
     {lc, toolButtonComponents, imageURLPrefix}), pickerElement)
-  React.renderComponent(Options({lc, imageURLPrefix}), optionsElement)
 
 
 module.exports = init
