@@ -5,7 +5,7 @@
 # this is pretty similar to the Rectangle tool. maybe consolidate somehow.
 module.exports = class AreaSelect extends ToolWithStroke
 
-  name: 'AreaSelect'
+  name: 'Area'
   iconName: 'bucket'
 
   constructor: -> @strokeWidth = 10
