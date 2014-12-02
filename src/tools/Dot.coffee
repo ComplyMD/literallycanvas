@@ -12,18 +12,33 @@ module.exports = class Dot extends ToolWithStroke
   optionsStyle: 'stroke-width'
 
   begin: (x, y, lc) ->
-    @currentShape = createShape('Ellipse', {
-      x, y, @strokeWidth,
-      height: @strokeWidth,
-      width: @strokeWidth,
-      strokeColor: lc.getColor('primary'),
-      fillColor: lc.getColor('primary')})
-    lc.drawShapeInProgress(@currentShape)
+    @removal = false;
+    for shape in lc.shapes when shape.customData.isDot
+      if (Math.pow((x - (shape.x + shape.width/2)), 2) + Math.pow((y - (shape.y + shape.width/2)), 2)) < Math.pow(shape.width, 2)
+        removedShape = lc.shapes.splice(lc.shapes.indexOf(shape), 1)[0]
+        lc.trigger('shapeSave', {shape: removedShape})
+        lc.trigger('drawingChange')
+        lc.repaintLayer('main')
+        @removal = true
+    if !@removal
+      @currentShape = createShape('Ellipse', {
+        x, y, @strokeWidth,
+        height: @strokeWidth,
+        width: @strokeWidth,
+        strokeColor: lc.getColor('primary'),
+        fillColor: lc.getColor('primary'),
+        customData: {
+          isDot: true
+        }
+      })
+      lc.drawShapeInProgress(@currentShape)
 
   continue: (x, y, lc) ->
-    @currentShape.x = x
-    @currentShape.y = y
-    lc.drawShapeInProgress(@currentShape)
+    if !@removal
+      @currentShape.x = x
+      @currentShape.y = y
+      lc.drawShapeInProgress(@currentShape)
 
   end: (x, y, lc) ->
-    lc.saveShape(@currentShape)
+    if !@removal
+      lc.saveShape(@currentShape)
