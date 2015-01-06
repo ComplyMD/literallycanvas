@@ -4,7 +4,7 @@ createSetStateOnEventMixin = require './createSetStateOnEventMixin'
 
 ClearButton = React.createClass
   displayName: 'ClearButton'
-  getState: -> {isEnabled: @props.lc.canUndo()}
+  getState: -> {isEnabled: true}
   getInitialState: -> @getState()
   mixins: [createSetStateOnEventMixin('drawingChange')]
 
@@ -17,7 +17,7 @@ ClearButton = React.createClass
       'toolbar-button': true
       'fat-button': true
       'disabled': not @state.isEnabled
-    onClick = if lc.canUndo() then (=> lc.clear()) else ->
+    onClick = if true then (=> lc.clear()) else ->
 
     (li {className, onClick}, _('Clear'))
 
