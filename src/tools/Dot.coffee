@@ -13,9 +13,10 @@ module.exports = class Dot extends ToolWithStroke
 
   begin: (x, y, lc) ->
     @removal = false;
-    for shape in lc.shapes when shape.customData.isDot
+    for shape in lc.shapes when shape && shape.customData.isDot
       if (Math.pow((x - (shape.x + shape.width/2)), 2) + Math.pow((y - (shape.y + shape.width/2)), 2)) < Math.pow(shape.width, 2)
         removedShape = lc.shapes.splice(lc.shapes.indexOf(shape), 1)[0]
+        removedShape.removed = true
         lc.trigger('shapeSave', {shape: removedShape})
         lc.trigger('drawingChange')
         lc.repaintLayer('main')
