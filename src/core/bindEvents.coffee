@@ -21,7 +21,7 @@ buttonIsDown = (e) ->
 
 
 module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
-
+  down = false
   canvas.addEventListener 'mousedown', (e) =>
     down = true
     e.preventDefault()
@@ -30,15 +30,18 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
     lc.begin(p.left, p.top)
 
   document.addEventListener 'mousemove', (e) =>
-    e.preventDefault()
-    p = position(canvas, e)
-    lc.continue(p.left, p.top)
+    if down
+      e.preventDefault()
+      p = position(canvas, e)
+      lc.continue(p.left, p.top)
 
   document.addEventListener 'mouseup', (e) =>
-    e.preventDefault()
-    document.onselectstart = -> true # enable selection while dragging
-    p = position(canvas, e)
-    lc.end(p.left, p.top)
+    if down
+      e.preventDefault()
+      document.onselectstart = -> true # enable selection while dragging
+      p = position(canvas, e)
+      lc.end(p.left, p.top)
+      down = false
 
   canvas.addEventListener 'touchstart', (e) ->
     e.preventDefault()
