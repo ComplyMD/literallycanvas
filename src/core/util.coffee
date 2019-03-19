@@ -1,6 +1,13 @@
 slice = Array.prototype.slice
 
 util =
+  classSet: (classNameToIsPresent) ->
+    classNames = []
+    for key, val of classNameToIsPresent
+      if val
+        classNames.push(key)
+    return classNames.join(" ")
+
   last: (array, n = null) ->
     if n
       return slice.call(array, Math.max(array.length - n, 0))

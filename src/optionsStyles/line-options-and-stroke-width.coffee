@@ -1,8 +1,12 @@
+React = require '../reactGUI/React-shim'
+DOM = require '../reactGUI/ReactDOMFactories-shim'
+createReactClass = require '../reactGUI/createReactClass-shim'
 {defineOptionsStyle} = require './optionsStyles'
-StrokeWidthPicker = require '../reactGUI/StrokeWidthPicker'
+StrokeWidthPicker = React.createFactory require '../reactGUI/StrokeWidthPicker'
 createSetStateOnEventMixin = require '../reactGUI/createSetStateOnEventMixin'
+{classSet} = require '../core/util'
 
-defineOptionsStyle 'line-options-and-stroke-width', React.createClass
+defineOptionsStyle 'line-options-and-stroke-width', createReactClass
   displayName: 'LineOptionsAndStrokeWidth'
   getState: -> {
     strokeWidth: @props.tool.strokeWidth,
@@ -13,7 +17,7 @@ defineOptionsStyle 'line-options-and-stroke-width', React.createClass
   mixins: [createSetStateOnEventMixin('toolChange')]
 
   render: ->
-    {div, ul, li, img} = React.DOM
+    {div, ul, li, img} = DOM
     toggleIsDashed = =>
       @props.tool.isDashed = !@props.tool.isDashed
       @setState @getState()
@@ -21,25 +25,20 @@ defineOptionsStyle 'line-options-and-stroke-width', React.createClass
       @props.tool.hasEndArrow = !@props.tool.hasEndArrow
       @setState @getState()
 
-    dashButtonClass = React.addons.classSet
-      'basic-button square-button': true
+    dashButtonClass = classSet
+      'square-toolbar-button': true
       'selected': @state.isDashed
-    arrowButtonClass = React.addons.classSet
-      'basic-button square-button': true
+    arrowButtonClass = classSet
+      'square-toolbar-button': true
       'selected': @state.hasEndArrow
+    style = {float: 'left', margin: 1}
 
     (div {},
-      (ul {className: 'button-row', style: {float: 'left', marginRight: 20}},
-        (li {},
-          (div {className: dashButtonClass, onClick: toggleIsDashed},
-            (img {src: "#{@props.imageURLPrefix}/dashed-line.png"})
-          )
-        ),
-        (li {},
-          (div {className: arrowButtonClass, onClick: togglehasEndArrow},
-            (img {src: "#{@props.imageURLPrefix}/line-with-arrow.png"})
-          )
-        )
+      (div {className: dashButtonClass, onClick: toggleIsDashed, style},
+        (img {src: "#{@props.imageURLPrefix}/dashed-line.png"})
+      ),
+      (div {className: arrowButtonClass, onClick: togglehasEndArrow, style},
+        (img {src: "#{@props.imageURLPrefix}/line-with-arrow.png"})
       ),
       (StrokeWidthPicker {tool: @props.tool, lc: @props.lc})
     )

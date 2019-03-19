@@ -3,7 +3,6 @@ lineEndCapShapes = require '../core/lineEndCapShapes.coffee'
 
 shapes = {}
 
-
 defineShape = (name, props) ->
   Shape = (argsObj) ->
     props.constructor.call(this, argsObj)

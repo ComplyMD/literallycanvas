@@ -1,7 +1,11 @@
 React = require './React-shim'
+DOM = require '../reactGUI/ReactDOMFactories-shim'
+createReactClass = require '../reactGUI/createReactClass-shim'
 createSetStateOnEventMixin = require './createSetStateOnEventMixin'
+{classSet} = require '../core/util'
+{_} = require '../core/localization'
 
-createUndoRedoButtonComponent = (undoOrRedo) -> React.createClass
+createUndoRedoButtonComponent = (undoOrRedo) -> createReactClass
   displayName: if undoOrRedo == 'undo' then 'UndoButton' else 'RedoButton'
 
   # We do this a lot, even though it reads as a React no-no.
@@ -20,11 +24,11 @@ createUndoRedoButtonComponent = (undoOrRedo) -> React.createClass
   mixins: [createSetStateOnEventMixin('drawingChange')]
 
   render: ->
-    {div, img} = React.DOM
+    {div, img} = DOM
     {lc, imageURLPrefix} = @props
     title = if undoOrRedo == 'undo' then 'Undo' else 'Redo'
-
-    className = "lc-#{undoOrRedo} " + React.addons.classSet
+    title = _(title)
+    className = "lc-#{undoOrRedo} " + classSet
       'toolbar-button': true
       'thin-button': true
       'disabled': not @state.isEnabled
@@ -32,17 +36,18 @@ createUndoRedoButtonComponent = (undoOrRedo) -> React.createClass
       when !@state.isEnabled then ->
       when undoOrRedo == 'undo' then -> lc.undo()
       when undoOrRedo == 'redo' then -> lc.redo()
+    src = "#{imageURLPrefix}/#{undoOrRedo}.png"
+    style = {backgroundImage: "url(#{src})"}
 
-    (div {className, onClick, title},
-      (img {src: "#{imageURLPrefix}/#{undoOrRedo}.png"}))
+    (div {className, onClick, title, style})
 
 
-UndoButton = createUndoRedoButtonComponent('undo')
-RedoButton = createUndoRedoButtonComponent('redo')
-UndoRedoButtons = React.createClass
+UndoButton = React.createFactory createUndoRedoButtonComponent('undo')
+RedoButton = React.createFactory createUndoRedoButtonComponent('redo')
+UndoRedoButtons = createReactClass
   displayName: 'UndoRedoButtons'
   render: ->
-    {div} = React.DOM
+    {div} = DOM
     (div {className: 'lc-undo-redo'}, UndoButton(@props), RedoButton(@props))
 
 module.exports = UndoRedoButtons

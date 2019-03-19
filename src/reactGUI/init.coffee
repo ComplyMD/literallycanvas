@@ -1,8 +1,9 @@
 React = require './React-shim'
+ReactDOM = require './ReactDOM-shim'
 
 createToolButton = require './createToolButton'
 Options = require './Options'
-Picker = require './Picker'
+Picker = React.createFactory(require './Picker')
 
 
 init = (pickerElement, lc, tools, imageURLPrefix) ->
@@ -13,7 +14,7 @@ init = (pickerElement, lc, tools, imageURLPrefix) ->
       imageName: toolInstance.iconName
       getTool: -> toolInstance
 
-  React.renderComponent(Picker(
+  ReactDOM.render(Picker(
     {lc, toolButtonComponents, imageURLPrefix}), pickerElement)
 
 
